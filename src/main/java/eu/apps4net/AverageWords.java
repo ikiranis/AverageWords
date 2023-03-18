@@ -6,7 +6,7 @@ package eu.apps4net;
  * Date: 26/2/23
  * Time: 10:49 μ.μ.
  *
- * Count the average length of words
+ * Υπολογισμός μέσου όρου μήκους λέξεων που αρχίζουν με έναν συγκεκριμένο χαρακτήρα
  *
  */
 
@@ -36,17 +36,23 @@ public class AverageWords {
             // Αφαίρεση σημείων στίξης και μετατροπή σε lower case
             line = line.replaceAll("\\p{Punct}", " ").toLowerCase();
 
+            // Δημιουργία tokens από την τρέχουσα γραμμή
             StringTokenizer itr = new StringTokenizer(line);
+
+            // Επεξεργασία κάθε token
             while (itr.hasMoreTokens()) {
                 // Reads each word and removes (strips) the white space
                 String token = itr.nextToken().strip();
 
                 // Αν δεν αρχίζει από αριθμό
                 if(!token.matches("^\\d.*")) {
+                    // Παίρνει τον πρώτο χαρακτήρα της λέξης
                     word.set(String.valueOf(token.charAt(0)));
 
+                    // Παίρνει το μήκος της λέξης
                     wordLength.set(token.length());
 
+                    // Προσθέτει στο context με το αρχικό της λέξης και το μήκος της
                     context.write(word, wordLength);
                 }
 
@@ -61,20 +67,19 @@ public class AverageWords {
             int sum = 0;
             int count = 0;
 
-//            System.out.print(key + " ");
-
+            // Υπολογίζει το άθροισμα των μεγεθών των λέξεων και τον αριθμό των λέξεων
             for (FloatWritable val : values) {
                 sum += val.get();
                 count++;
             }
 
+            // Υπολογίζει το μέσο όρο
             float average = (float) sum/count;
-//            System.out.println("Sum: " + sum + " count: " + count + " average: "  + average);
 
-            // Format the average value as a string with two decimal places
+            // Μορφοποίηση του μέσου όρου σε 1 δεκαδικό ψηφίο
             String formattedAverage = String.format("%.1f", average);
 
-            // Parse the formatted string back into a float
+            // Προσθέτει το μέσο όρο στο context, για το συγκεκριμένο αρχικό της λέξης
             result.set(Float.parseFloat(formattedAverage));
 
             context.write(key, result);
